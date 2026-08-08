@@ -80,7 +80,13 @@ export function WidgetForm({ initialWidget }: WidgetFormProps) {
     setIsSubmitting(false);
 
     if (!json.success) {
-      setError(json.error?.message ?? "Failed to save widget.");
+      if (json.error?.code === "WIDGET_LIMIT_REACHED") {
+        setError(
+          "You've reached the 10-widget limit for your account. Delete an existing widget to create a new one.",
+        );
+      } else {
+        setError(json.error?.message ?? "Failed to save widget.");
+      }
       return;
     }
 

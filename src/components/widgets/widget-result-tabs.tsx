@@ -3,13 +3,20 @@
 import { useState } from "react";
 import { WidgetPreview } from "@/components/widgets/widget-preview";
 import { EmbedSnippetBox } from "@/components/widgets/embed-snippet-box";
+import { WidgetSourceView } from "@/components/widgets/widget-source-view";
 
 interface WidgetResultTabsProps {
   widgetId: string;
   bundleVersion: number;
 }
 
-type Tab = "preview" | "code";
+type Tab = "preview" | "embed" | "source";
+
+const TABS: { key: Tab; label: string }[] = [
+  { key: "preview", label: "Preview" },
+  { key: "embed", label: "Embed" },
+  { key: "source", label: "Code" },
+];
 
 export function WidgetResultTabs({
   widgetId,
@@ -20,34 +27,30 @@ export function WidgetResultTabs({
   return (
     <div>
       <div className="mb-3 inline-flex rounded-lg border border-[#5b2f99] bg-[#15072d]/70 p-1">
-        <button
-          type="button"
-          onClick={() => setTab("preview")}
-          className={`rounded-md px-4 py-1.5 text-xs font-semibold transition ${
-            tab === "preview"
-              ? "bg-gradient-to-r from-[#8d5cff] via-[#b184ff] to-[#dbaefd] text-[#12021f]"
-              : "text-white/50 hover:text-white"
-          }`}
-        >
-          Preview
-        </button>
-        <button
-          type="button"
-          onClick={() => setTab("code")}
-          className={`rounded-md px-4 py-1.5 text-xs font-semibold transition ${
-            tab === "code"
-              ? "bg-gradient-to-r from-[#8d5cff] via-[#b184ff] to-[#dbaefd] text-[#12021f]"
-              : "text-white/50 hover:text-white"
-          }`}
-        >
-          Code
-        </button>
+        {TABS.map((t) => (
+          <button
+            key={t.key}
+            type="button"
+            onClick={() => setTab(t.key)}
+            className={`rounded-md px-4 py-1.5 text-xs font-semibold transition ${
+              tab === t.key
+                ? "bg-gradient-to-r from-[#8d5cff] via-[#b184ff] to-[#dbaefd] text-[#12021f]"
+                : "text-white/50 hover:text-white"
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
       </div>
 
-      {tab === "preview" ? (
+      {tab === "preview" && (
         <WidgetPreview widgetId={widgetId} bundleVersion={bundleVersion} />
-      ) : (
+      )}
+      {tab === "embed" && (
         <EmbedSnippetBox widgetId={widgetId} bundleVersion={bundleVersion} />
+      )}
+      {tab === "source" && (
+        <WidgetSourceView widgetId={widgetId} bundleVersion={bundleVersion} />
       )}
     </div>
   );
