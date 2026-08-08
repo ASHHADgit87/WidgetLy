@@ -4,6 +4,7 @@ import { createWidgetSchema } from "@/lib/validation/schemas";
 import {
   createWidget,
   listWidgetsForTenant,
+  WidgetLimitReachedError,
 } from "@/lib/db/widgets.repository";
 import type { ApiResponse } from "@/types";
 import type { Widget } from "@prisma/client";
@@ -71,6 +72,22 @@ export async function POST(
     );
   }
 
-  const widget = await createWidget(userId, parsed.data);
-  return NextResponse.json({ success: true, data: widget }, { status: 201 });
+  try {
+    const widget = await createWidget(userId, parsed.data);
+    return NextResponse.json({ success: true, data: widget }, { status: 201 });
+  } catch (error) {
+    if (error instanceof WidgetLimitReachedError) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: "WIDGET_LIMIT_REACHED",
+            message: error.message,
+          },
+        },
+        { status: 409 },
+      );
+    }
+    throw error;
+  }
 }
