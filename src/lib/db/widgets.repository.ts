@@ -78,6 +78,7 @@ export async function updateWidgetForTenant(
         displayOptions: input.displayOptions,
       }),
       ...(input.isActive !== undefined && { isActive: input.isActive }),
+      ...(input.themeSeed !== undefined && { themeSeed: input.themeSeed }),
 
       bundleVersion: { increment: 1 },
     },

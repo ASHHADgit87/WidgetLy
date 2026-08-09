@@ -681,7 +681,7 @@ export async function GET(
   };
 
   const themeSeedParam = new URL(request.url).searchParams.get("themeSeed");
-  const seedString = themeSeedParam || widget.id;
+  const seedString = widget.themeSeed || themeSeedParam || widget.id;
   const theme = THEMES[hashToIndex(seedString, THEMES.length)]!;
   const apiBase = new URL(request.url).origin;
 

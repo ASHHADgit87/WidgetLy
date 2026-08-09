@@ -7,15 +7,18 @@ import { Button } from "@/components/ui/button";
 interface EmbedSnippetBoxProps {
   widgetId: string;
   bundleVersion: number;
+  themeSeed?: number;
 }
 
 export function EmbedSnippetBox({
   widgetId,
   bundleVersion,
+  themeSeed,
 }: EmbedSnippetBoxProps) {
   const [copied, setCopied] = useState(false);
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "";
-  const snippet = `<script src="${appUrl}/api/widget-bundle/v${bundleVersion}?id=${widgetId}"></script>`;
+  const themeParam = themeSeed ? `&themeSeed=${themeSeed}` : "";
+  const snippet = `<script src="${appUrl}/api/widget-bundle/v${bundleVersion}?id=${widgetId}${themeParam}"></script>`;
 
   async function handleCopy() {
     await navigator.clipboard.writeText(snippet);

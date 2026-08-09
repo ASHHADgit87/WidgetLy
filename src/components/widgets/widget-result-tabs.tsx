@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { WidgetPreview } from "@/components/widgets/widget-preview";
 import { EmbedSnippetBox } from "@/components/widgets/embed-snippet-box";
 import { WidgetSourceView } from "@/components/widgets/widget-source-view";
@@ -25,6 +25,40 @@ export function WidgetResultTabs({
   const [tab, setTab] = useState<Tab>("preview");
 
   const [themeSeed, setThemeSeed] = useState(0);
+  const [initialThemeSeed, setInitialThemeSeed] = useState<string | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const res = await fetch(`/api/widgets/${widgetId}`);
+        const json = await res.json();
+        if (mounted && json?.success && json.data?.themeSeed) {
+          setThemeSeed(Number(json.data.themeSeed) || 0);
+          setInitialThemeSeed(json.data.themeSeed);
+        }
+      } catch {}
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, [widgetId]);
+
+  useEffect(() => {
+    if (initialThemeSeed === null) return;
+    const current = String(themeSeed);
+    if (current === initialThemeSeed) return;
+
+    const t = setTimeout(() => {
+      fetch(`/api/widgets/${widgetId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ themeSeed: String(themeSeed) }),
+      }).catch(() => {});
+    }, 600);
+
+    return () => clearTimeout(t);
+  }, [themeSeed, widgetId, initialThemeSeed]);
 
   return (
     <div>
@@ -54,7 +88,7 @@ export function WidgetResultTabs({
         />
       )}
       {tab === "embed" && (
-        <EmbedSnippetBox widgetId={widgetId} bundleVersion={bundleVersion} />
+        <EmbedSnippetBox widgetId={widgetId} bundleVersion={bundleVersion} themeSeed={themeSeed} />
       )}
       {tab === "source" && (
         <WidgetSourceView

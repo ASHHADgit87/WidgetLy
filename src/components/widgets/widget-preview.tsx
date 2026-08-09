@@ -106,16 +106,31 @@ export function WidgetPreview({
         />
       </div>
 
-      <Button
-        type="button"
-        variant="ghost"
-        size="sm"
-        onClick={() => onThemeSeedChange(Math.random())}
-        className="mt-3 gap-1.5"
-      >
-        <Sparkles size={14} />
-        New theme
-      </Button>
+      <div className="flex items-center gap-2">
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={() => onThemeSeedChange(Math.random())}
+          className="gap-1.5"
+        >
+          <Sparkles size={14} />
+          New theme
+        </Button>
+        <Button
+          type="button"
+          variant="secondary"
+          size="sm"
+          onClick={async () => {
+            const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "";
+            const url = `${appUrl}/api/widgets/${widgetId}/form${themeSeed ? `?themeSeed=${themeSeed}` : ""}`;
+            await navigator.clipboard.writeText(url);
+          }}
+          className="gap-1.5"
+        >
+          Copy link
+        </Button>
+      </div>
     </div>
   );
 }

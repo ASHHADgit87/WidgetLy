@@ -42,6 +42,7 @@ export const createWidgetSchema = z.object({
 
 export const updateWidgetSchema = createWidgetSchema.partial().extend({
   isActive: z.boolean().optional(),
+  themeSeed: z.string().optional(),
 });
 
 export const registerSchema = z.object({

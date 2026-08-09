@@ -32,6 +32,7 @@ model Widget {
   honeypotFieldName String       @default("company_website")
   bundleVersion     Int          @default(1)
   isActive          Boolean      @default(true)
+  themeSeed         String?
   createdAt         DateTime     @default(now())
   updatedAt         DateTime     @updatedAt
   submissions       Submission[]
