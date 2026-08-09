@@ -24,7 +24,7 @@ export default async function WidgetDetailPage({ params }: PageProps) {
     <div className="relative">
       <AmbientBubbles />
 
-      <div className="relative z-10 max-w-2xl space-y-8">
+      <div className="relative z-10 max-w-6xl space-y-8">
         <div className="flex items-start justify-between gap-4">
           <div>
             <h1 className="text-xl font-semibold text-white">{widget.title}</h1>
@@ -39,12 +39,16 @@ export default async function WidgetDetailPage({ params }: PageProps) {
           </Link>
         </div>
 
-        <WidgetResultTabs
-          widgetId={widget.id}
-          bundleVersion={widget.bundleVersion}
-        />
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:items-start">
+          <div className="lg:sticky lg:top-6">
+            <WidgetResultTabs
+              widgetId={widget.id}
+              bundleVersion={widget.bundleVersion}
+            />
+          </div>
 
-        <WidgetForm initialWidget={widget} />
+          <WidgetForm initialWidget={widget} />
+        </div>
       </div>
     </div>
   );
