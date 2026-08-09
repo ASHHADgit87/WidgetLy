@@ -163,7 +163,7 @@ WidgetLy is delivered as a **Backend-as-a-Service (BaaS)** for lead capture. Dev
 
 # Live Demo
 
-
+https://widgetly-sigma.vercel.app/
 
 ---
 
