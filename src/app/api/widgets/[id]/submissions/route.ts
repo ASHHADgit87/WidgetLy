@@ -5,7 +5,7 @@ import type { ApiResponse } from "@/types";
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ): Promise<
   NextResponse<ApiResponse<{ submissions: unknown[]; total: number }>>
 > {
@@ -21,7 +21,8 @@ export async function GET(
     );
   }
 
-  const widgetId = params.id;
+  const { id } = await params;
+  const widgetId = id;
 
   const widget = await prisma.widget.findUnique({
     where: { id: widgetId },

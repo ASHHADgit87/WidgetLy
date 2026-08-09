@@ -49,11 +49,11 @@ async function request(path: string, opts: FetchOpts = {}) {
 
 export const http = {
   get: (p: string) => request(p, { method: "GET" }),
-  post: (p: string, body?: any) =>
+  post: (p: string, body?: unknown) =>
     request(p, { method: "POST", body: JSON.stringify(body) }),
-  put: (p: string, body?: any) =>
+  put: (p: string, body?: unknown) =>
     request(p, { method: "PUT", body: JSON.stringify(body) }),
-  patch: (p: string, body?: any) =>
+  patch: (p: string, body?: unknown) =>
     request(p, { method: "PATCH", body: JSON.stringify(body) }),
   del: (p: string) => request(p, { method: "DELETE" }),
 };

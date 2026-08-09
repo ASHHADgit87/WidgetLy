@@ -67,7 +67,7 @@ export default async function WidgetSubmissionsPage({
       </div>
 
       <WidgetSubmissionsTable
-        submissions={submissions as any}
+        submissions={submissions}
         total={total}
         widgetId={widget.id}
         page={page}

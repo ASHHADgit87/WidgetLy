@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { Suspense, useState, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") ?? "/dashboard";
@@ -56,55 +56,63 @@ export default function LoginPage() {
   }
 
   return (
-    <AuthPageShell>
-      <AuthFormCard
-        title="Sign in"
-        description="Access your widget dashboard."
-        footer={
-          <AuthFormFooter>
-            No account?{" "}
-            <Link
-              href="/register"
-              className="text-[#c9b3ff] transition hover:text-white"
-            >
-              Register
-            </Link>
-          </AuthFormFooter>
-        }
-      >
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <AuthFormField label="Email" htmlFor="email">
-            <Input
-              id="email"
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </AuthFormField>
-
-          <AuthFormField label="Password" htmlFor="password">
-            <Input
-              id="password"
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </AuthFormField>
-
-          {error && <p className="text-sm text-purple">{error}</p>}
-
-          <Button
-            type="submit"
-            variant="secondary"
-            disabled={isSubmitting}
-            className="w-full"
+    <AuthFormCard
+      title="Sign in"
+      description="Access your widget dashboard."
+      footer={
+        <AuthFormFooter>
+          No account?{" "}
+          <Link
+            href="/register"
+            className="text-[#c9b3ff] transition hover:text-white"
           >
-            {isSubmitting ? "Signing in…" : "Sign in"}
-          </Button>
-        </form>
-      </AuthFormCard>
+            Register
+          </Link>
+        </AuthFormFooter>
+      }
+    >
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <AuthFormField label="Email" htmlFor="email">
+          <Input
+            id="email"
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </AuthFormField>
+
+        <AuthFormField label="Password" htmlFor="password">
+          <Input
+            id="password"
+            type="password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </AuthFormField>
+
+        {error && <p className="text-sm text-purple">{error}</p>}
+
+        <Button
+          type="submit"
+          variant="secondary"
+          disabled={isSubmitting}
+          className="w-full"
+        >
+          {isSubmitting ? "Signing in…" : "Sign in"}
+        </Button>
+      </form>
+    </AuthFormCard>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <AuthPageShell>
+      <Suspense fallback={<div className="p-8 text-center text-white/50">Loading…</div>}>
+        <LoginForm />
+      </Suspense>
     </AuthPageShell>
   );
 }
