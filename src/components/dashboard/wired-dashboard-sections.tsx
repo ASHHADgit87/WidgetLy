@@ -40,10 +40,10 @@ export function WiredDashboardSections({
   ];
 
   return (
-    <div className="space-y-16">
+    <div className="space-y-12 sm:space-y-16">
       {sections.map((section, i) => (
         <div key={section.title}>
-          <h2 className="mb-4 text-center text-sm font-semibold text-white/70">
+          <h2 className="mb-3 text-center text-xs font-semibold text-white/70 sm:mb-4 sm:text-sm">
             {section.title}
           </h2>
           <div className="flex flex-col items-stretch gap-4 sm:flex-row sm:items-center sm:justify-center">
