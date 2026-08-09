@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
-import { getWidgetForTenant } from "@/lib/db/widgets.repository";
+import { getWidgetById } from "@/lib/db/widgets.repository";
 import type { WidgetPublicConfig } from "@/types";
 
 interface RouteContext {
@@ -656,25 +655,13 @@ export async function GET(
   request: Request,
   { params }: RouteContext,
 ): Promise<Response> {
-  const session = await auth();
-  const userId = session?.user?.id;
-  if (!userId) {
-    return NextResponse.json(
-      {
-        success: false,
-        error: { code: "UNAUTHORIZED", message: "Sign in required" },
-      },
-      { status: 401 },
-    );
-  }
-
   const { id } = await params;
-  const widget = await getWidgetForTenant(id, userId);
-  if (!widget) {
+  const widget = await getWidgetById(id);
+  if (!widget || !widget.isActive) {
     return NextResponse.json(
       {
         success: false,
-        error: { code: "NOT_FOUND", message: "Widget not found" },
+        error: { code: "NOT_FOUND", message: "Widget not found or inactive" },
       },
       { status: 404 },
     );
