@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useMemo, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,32 +11,196 @@ interface WidgetFormProps {
   initialWidget?: Widget;
 }
 
-const defaultField: WidgetField = {
-  name: "email",
-  label: "Email",
-  type: "email",
-  required: true,
+interface WidgetPreset {
+  title: string;
+  description: string;
+  buttonText: string;
+  fields: WidgetField[];
+}
+
+const TYPE_PRESETS: Record<Widget["type"], WidgetPreset> = {
+  SIGNUP_FORM: {
+    title: "Create your account",
+    description: "Sign up to get started.",
+    buttonText: "Sign up",
+    fields: [
+      { name: "name", label: "Full name", type: "text", required: true },
+      { name: "email", label: "Email", type: "email", required: true },
+    ],
+  },
+  CONTACT_FORM: {
+    title: "Get in touch",
+    description: "We'll get back to you within a day.",
+    buttonText: "Send message",
+    fields: [
+      { name: "name", label: "Name", type: "text", required: true },
+      { name: "email", label: "Email", type: "email", required: true },
+      { name: "message", label: "Message", type: "textarea", required: true },
+    ],
+  },
+  CTA_POPOVER: {
+    title: "Don't miss out",
+    description: "Join thousands already using the product.",
+    buttonText: "Get started",
+    fields: [{ name: "email", label: "Email", type: "email", required: true }],
+  },
+  NEWSLETTER_BAR: {
+    title: "Stay in the loop",
+    description: "One email a week, no spam.",
+    buttonText: "Subscribe",
+    fields: [{ name: "email", label: "Email", type: "email", required: true }],
+  },
+  EXIT_INTENT: {
+    title: "Wait — before you go",
+    description: "Get 10% off your first order.",
+    buttonText: "Claim discount",
+    fields: [{ name: "email", label: "Email", type: "email", required: true }],
+  },
+  WAITLIST: {
+    title: "Join the waitlist",
+    description: "Be first in line when we launch.",
+    buttonText: "Join waitlist",
+    fields: [
+      { name: "name", label: "Name", type: "text", required: true },
+      { name: "email", label: "Email", type: "email", required: true },
+      {
+        name: "company",
+        label: "Company (optional)",
+        type: "text",
+        required: false,
+      },
+    ],
+  },
+  FEEDBACK_NPS: {
+    title: "How are we doing?",
+    description: "0 = not likely, 10 = extremely likely to recommend us.",
+    buttonText: "Submit feedback",
+    fields: [
+      {
+        name: "score",
+        label: "Score (0–10)",
+        type: "text",
+        required: true,
+        placeholder: "e.g. 9",
+      },
+      {
+        name: "comments",
+        label: "Anything else?",
+        type: "textarea",
+        required: false,
+      },
+    ],
+  },
+  CHAT_BUBBLE: {
+    title: "Chat with us",
+    description: "Usually reply within a few hours.",
+    buttonText: "Start chat",
+    fields: [
+      { name: "name", label: "Name", type: "text", required: true },
+      { name: "email", label: "Email", type: "email", required: true },
+      {
+        name: "message",
+        label: "How can we help?",
+        type: "textarea",
+        required: true,
+      },
+    ],
+  },
+  DISCOUNT_REVEAL: {
+    title: "Unlock your discount",
+    description: "Enter your email to reveal your code.",
+    buttonText: "Reveal code",
+    fields: [{ name: "email", label: "Email", type: "email", required: true }],
+  },
+  EVENT_RSVP: {
+    title: "RSVP now",
+    description: "Let us know if you're joining.",
+    buttonText: "RSVP",
+    fields: [
+      { name: "name", label: "Name", type: "text", required: true },
+      { name: "email", label: "Email", type: "email", required: true },
+      {
+        name: "attending",
+        label: "I'll be attending",
+        type: "checkbox",
+        required: false,
+      },
+      {
+        name: "guests",
+        label: "Number of guests",
+        type: "text",
+        required: false,
+        placeholder: "e.g. 2",
+      },
+    ],
+  },
 };
+
+const typeOptions: { value: Widget["type"]; label: string }[] = [
+  { value: "SIGNUP_FORM", label: "Signup form" },
+  { value: "CONTACT_FORM", label: "Contact form" },
+  { value: "CTA_POPOVER", label: "CTA popover" },
+  { value: "NEWSLETTER_BAR", label: "Newsletter bar" },
+  { value: "EXIT_INTENT", label: "Exit-intent popup" },
+  { value: "WAITLIST", label: "Waitlist" },
+  { value: "FEEDBACK_NPS", label: "Feedback / NPS" },
+  { value: "CHAT_BUBBLE", label: "Chat bubble" },
+  { value: "DISCOUNT_REVEAL", label: "Discount reveal" },
+  { value: "EVENT_RSVP", label: "Event RSVP" },
+];
+
+function serialize(
+  type: Widget["type"],
+  title: string,
+  description: string,
+  buttonText: string,
+  fields: WidgetField[],
+) {
+  return JSON.stringify({ type, title, description, buttonText, fields });
+}
 
 export function WidgetForm({ initialWidget }: WidgetFormProps) {
   const router = useRouter();
   const isEditing = Boolean(initialWidget);
 
-  const [title, setTitle] = useState(initialWidget?.title ?? "");
+  const initialType: Widget["type"] = initialWidget?.type ?? "SIGNUP_FORM";
+  const initialPreset = TYPE_PRESETS[initialType];
+
+  const [title, setTitle] = useState(
+    initialWidget?.title ?? initialPreset.title,
+  );
   const [description, setDescription] = useState(
-    initialWidget?.description ?? "",
+    initialWidget?.description ?? initialPreset.description,
   );
-  const [type, setType] = useState<Widget["type"]>(
-    initialWidget?.type ?? "SIGNUP_FORM",
-  );
+  const [type, setType] = useState<Widget["type"]>(initialType);
   const [buttonText, setButtonText] = useState(
-    initialWidget?.buttonText ?? "Submit",
+    initialWidget?.buttonText ?? initialPreset.buttonText,
   );
   const [fields, setFields] = useState<WidgetField[]>(
-    (initialWidget?.fields as WidgetField[] | undefined) ?? [defaultField],
+    (initialWidget?.fields as WidgetField[] | undefined) ??
+      initialPreset.fields,
   );
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [savedSnapshot, setSavedSnapshot] = useState(() =>
+    serialize(initialType, title, description, buttonText, fields),
+  );
+
+  const isDirty = useMemo(
+    () =>
+      serialize(type, title, description, buttonText, fields) !== savedSnapshot,
+    [type, title, description, buttonText, fields, savedSnapshot],
+  );
+
+  function handleTypeChange(nextType: Widget["type"]) {
+    setType(nextType);
+    const preset = TYPE_PRESETS[nextType];
+    setTitle(preset.title);
+    setDescription(preset.description);
+    setButtonText(preset.buttonText);
+    setFields(preset.fields);
+  }
 
   function updateField(index: number, patch: Partial<WidgetField>) {
     setFields((prev) =>
@@ -90,6 +254,8 @@ export function WidgetForm({ initialWidget }: WidgetFormProps) {
       return;
     }
 
+    setSavedSnapshot(serialize(type, title, description, buttonText, fields));
+
     router.push(
       isEditing ? `/widgets/${initialWidget!.id}` : `/widgets/${json.data.id}`,
     );
@@ -108,20 +274,19 @@ export function WidgetForm({ initialWidget }: WidgetFormProps) {
         <label className="mb-1 block text-sm text-white/60">Widget type</label>
         <select
           value={type}
-          onChange={(e) => setType(e.target.value as Widget["type"])}
+          onChange={(e) => handleTypeChange(e.target.value as Widget["type"])}
           className="w-full rounded-md border border-[#4b2b82] bg-[#1a0525] px-3 py-2 text-sm text-white outline-none focus:border-[#9e78ff]"
         >
-          <option value="SIGNUP_FORM">Signup form</option>
-          <option value="CONTACT_FORM">Contact form</option>
-          <option value="CTA_POPOVER">CTA popover</option>
-          <option value="NEWSLETTER_BAR">Newsletter bar</option>
-          <option value="EXIT_INTENT">Exit-intent popup</option>
-          <option value="WAITLIST">Waitlist</option>
-          <option value="FEEDBACK_NPS">Feedback / NPS</option>
-          <option value="CHAT_BUBBLE">Chat bubble</option>
-          <option value="DISCOUNT_REVEAL">Discount reveal</option>
-          <option value="EVENT_RSVP">Event RSVP</option>
+          {typeOptions.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
         </select>
+        <p className="mt-1 text-xs text-white/30">
+          Changing type replaces the title, description, and fields below with
+          suggested defaults for that type.
+        </p>
       </div>
 
       <div>
@@ -205,13 +370,15 @@ export function WidgetForm({ initialWidget }: WidgetFormProps) {
         </div>
       </div>
 
-      <Button type="submit" variant="secondary" disabled={isSubmitting}>
-        {isSubmitting
-          ? "Saving…"
-          : isEditing
-            ? "Save changes"
-            : "Create widget"}
-      </Button>
+      {(!isEditing || isDirty) && (
+        <Button type="submit" variant="secondary" disabled={isSubmitting}>
+          {isSubmitting
+            ? "Saving…"
+            : isEditing
+              ? "Save changes"
+              : "Create widget"}
+        </Button>
+      )}
     </form>
   );
 }

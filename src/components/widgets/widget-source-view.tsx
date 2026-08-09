@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 interface WidgetSourceViewProps {
   widgetId: string;
   bundleVersion: number;
+  themeSeed?: number;
 }
 
 type SubTab = "script" | "config";
@@ -14,6 +15,7 @@ type SubTab = "script" | "config";
 export function WidgetSourceView({
   widgetId,
   bundleVersion,
+  themeSeed = 0,
 }: WidgetSourceViewProps) {
   const [subTab, setSubTab] = useState<SubTab>("script");
   const [scriptText, setScriptText] = useState<string | null>(null);
@@ -26,8 +28,9 @@ export function WidgetSourceView({
     setIsLoading(true);
     setError(null);
     try {
+      const themeParam = themeSeed ? `?themeSeed=${themeSeed}` : "";
       const [scriptRes, configRes] = await Promise.all([
-        fetch(`/api/widget-bundle/v${bundleVersion}?id=${widgetId}`),
+        fetch(`/api/widgets/${widgetId}/standalone-script${themeParam}`),
         fetch(`/api/widgets/${widgetId}/config`),
       ]);
 
@@ -49,7 +52,7 @@ export function WidgetSourceView({
 
   useEffect(() => {
     load();
-  }, [widgetId, bundleVersion]);
+  }, [widgetId, bundleVersion, themeSeed]);
 
   async function handleCopy() {
     const text = subTab === "script" ? scriptText : configText;
@@ -89,7 +92,7 @@ export function WidgetSourceView({
                 : "text-white/40 hover:text-white/70"
             }`}
           >
-            Rendered script
+            Standalone script
           </button>
           <button
             type="button"
