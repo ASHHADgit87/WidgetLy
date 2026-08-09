@@ -39,7 +39,7 @@ export function Navbar() {
           setUserExists(Boolean(json.data?.user_exists));
         }
       } catch {
-        if (mounted) setUserExists(true);
+        if (mounted) setUserExists(false);
       }
     })();
     return () => {
