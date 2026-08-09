@@ -2,17 +2,11 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-
-interface SubmissionRow {
-  id: string;
-  data: Record<string, unknown>;
-  ipAddress: string | null;
-  geo: { country?: string; city?: string } | null;
-  createdAt: string | Date;
-}
+import { Badge } from "@/components/ui/badge";
+import type { Submission } from "@prisma/client";
 
 interface WidgetSubmissionsTableProps {
-  submissions: SubmissionRow[];
+  submissions: Submission[];
   total: number;
   widgetId: string;
   page: number;
@@ -60,9 +54,9 @@ export function WidgetSubmissionsTable({
                 .slice(0, 2)
                 .map(([k, v]) => `${k}: ${String(v)}`)
                 .join(" · ");
-              const location = sub.geo?.city
-                ? `${sub.geo.city}, ${sub.geo.country ?? ""}`
-                : (sub.geo?.country ?? "—");
+              const location = sub.city
+                ? `${sub.city}, ${sub.country ?? ""}`
+                : (sub.country ?? "—");
 
               return (
                 <motion.tr

@@ -6,8 +6,6 @@ import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
-interface NavbarProps {}
-
 const authedLinks = [
   { href: "/dashboard", label: "Overview" },
   { href: "/widgets", label: "Widgets" },
@@ -15,7 +13,7 @@ const authedLinks = [
   { href: "/profile", label: "Profile" },
 ];
 
-export function Navbar({}: NavbarProps) {
+export function Navbar() {
   const pathname = usePathname();
   const { data: session, status } = useSession();
   const isAuthenticated = !!session?.user;

@@ -37,9 +37,9 @@ export async function GET(
     title: widget.title,
     description: widget.description,
     buttonText: widget.buttonText,
-    fields: widget.fields as WidgetPublicConfig["fields"],
+    fields: widget.fields as unknown as WidgetPublicConfig["fields"],
     displayOptions:
-      widget.displayOptions as WidgetPublicConfig["displayOptions"],
+      widget.displayOptions as unknown as WidgetPublicConfig["displayOptions"],
     honeypotFieldName: widget.honeypotFieldName,
     bundleVersion: widget.bundleVersion,
   };

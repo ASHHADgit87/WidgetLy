@@ -100,19 +100,19 @@ export async function getDashboardStats(
     }
   }
 
-  const widgetIds = perWidgetRaw.map((row: any) => row.widgetId);
+  const widgetIds = perWidgetRaw.map((row) => row.widgetId);
   const widgets = await prisma.widget.findMany({
     where: { id: { in: widgetIds } },
     select: { id: true, title: true },
   });
-  const titleById = new Map(widgets.map((w: any) => [w.id, w.title]));
+  const titleById = new Map(widgets.map((w) => [w.id, w.title]));
 
   return {
     totalSubmissions,
     submissionsLast7Days: Array.from(dayBuckets.entries())
       .map(([date, count]) => ({ date, count }))
       .sort((a, b) => a.date.localeCompare(b.date)),
-    perWidget: perWidgetRaw.map((row: any) => ({
+    perWidget: perWidgetRaw.map((row) => ({
       widgetId: row.widgetId,
       widgetTitle: titleById.get(row.widgetId) ?? "Unknown widget",
       count: row._count._all,

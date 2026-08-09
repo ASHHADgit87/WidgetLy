@@ -10,7 +10,7 @@ function base64url(input: Buffer | string) {
 }
 
 export function signJwt(
-  payload: Record<string, any>,
+  payload: Record<string, unknown>,
   secret: string,
   expiresInSec: number,
 ) {
