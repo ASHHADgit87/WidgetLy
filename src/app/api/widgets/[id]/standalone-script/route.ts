@@ -94,10 +94,12 @@ function buildStandaloneScript(
   config: WidgetPublicConfig,
   theme: (typeof THEMES)[number],
   apiBase: string,
+  seedString: string,
 ): string {
   const configJson = JSON.stringify(config);
   const themeJson = JSON.stringify(theme);
   const apiBaseJson = JSON.stringify(apiBase);
+  const seedJson = JSON.stringify(seedString);
 
   return `
 (function () {
@@ -110,6 +112,7 @@ function buildStandaloneScript(
   var apiBase = ${apiBaseJson};
   var config = ${configJson};
   var theme = ${themeJson};
+  var variantSeed = ${seedJson};
   var prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   function el(tag, styles, attrs) {
@@ -160,10 +163,12 @@ function buildStandaloneScript(
         fontSize: '14px',
         fontFamily: 'inherit',
         color: theme.text,
-        background: 'rgba(255,255,255,0.06)',
+        background: 'rgba(255,255,255,0.08)',
         border: '1px solid ' + theme.primary + '40',
         borderRadius: '10px',
         outline: 'none',
+        position: 'relative',
+        zIndex: '1',
         transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
       });
       input.addEventListener('focus', function () {
@@ -189,53 +194,294 @@ function buildStandaloneScript(
     return wrapper;
   }
 
-  function renderAnimatedBackground(canvas, theme) {
-    var ctx = canvas.getContext('2d');
-    var dpr = Math.min(window.devicePixelRatio || 1, 2);
-    var w, h;
-
-    function resize() {
-      w = canvas.clientWidth;
-      h = canvas.clientHeight;
-      canvas.width = w * dpr;
-      canvas.height = h * dpr;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    }
-    resize();
-    window.addEventListener('resize', resize);
-
-    var orbs = [
-      { x: 0.2, y: 0.3, r: 0.5, color: theme.primary, dx: 0.00012, dy: 0.00009 },
-      { x: 0.8, y: 0.7, r: 0.45, color: theme.secondary, dx: -0.00010, dy: 0.00011 },
-      { x: 0.5, y: 0.15, r: 0.35, color: theme.accent, dx: 0.00008, dy: -0.00010 },
-    ];
-
-    function draw(t) {
-      ctx.clearRect(0, 0, w, h);
-      orbs.forEach(function (orb) {
-        var cx = (orb.x + Math.sin(t * orb.dx) * 0.15) * w;
-        var cy = (orb.y + Math.cos(t * orb.dy) * 0.15) * h;
-        var r = orb.r * Math.max(w, h);
-        var grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
-        grad.addColorStop(0, orb.color + '55');
-        grad.addColorStop(1, orb.color + '00');
-        ctx.fillStyle = grad;
-        ctx.beginPath();
-        ctx.arc(cx, cy, r, 0, Math.PI * 2);
-        ctx.fill();
-      });
-    }
-
-    if (prefersReducedMotion) {
-      draw(0);
+  // Loads three.js from CDN exactly once per page, even if multiple
+  // widgets are embedded — subsequent widgets reuse the same script tag.
+  function loadThree(callback) {
+    if (window.THREE) {
+      callback();
       return;
     }
-
-    function loop(now) {
-      draw(now);
-      canvas._raf = requestAnimationFrame(loop);
+    var existing = document.querySelector('script[data-widget-three-loader]');
+    if (existing) {
+      existing.addEventListener('load', callback);
+      return;
     }
-    canvas._raf = requestAnimationFrame(loop);
+    var s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+    s.setAttribute('data-widget-three-loader', 'true');
+    s.onload = callback;
+    document.head.appendChild(s);
+  }
+
+  // Independent hash from the color-theme hash, so the background PATTERN
+  // and the color THEME vary independently — clicking "new theme" changes
+  // both, without them repeating the same pairing.
+  function pickVariantIndex(seed, mod) {
+    var hash = 0;
+    for (var i = 0; i < seed.length; i++) {
+      hash = (hash * 17 + seed.charCodeAt(i) + 7) >>> 0;
+    }
+    return hash % mod;
+  }
+
+  // --- Background variants: all low-opacity, particle/line-based, none
+  // of them a large center-filling shape that could cross over fields. ---
+
+  function buildAmbientDrift(THREE, scene, theme) {
+    var count = 26;
+    var geo = new THREE.BufferGeometry();
+    var positions = new Float32Array(count * 3);
+    var radii = [], angles = [], ys = [];
+    for (var i = 0; i < count; i++) {
+      var r = 1.6 + Math.random() * 1.6;
+      var a = Math.random() * Math.PI * 2;
+      var y = (Math.random() - 0.5) * 2.4;
+      radii.push(r); angles.push(a); ys.push(y);
+      positions[i * 3] = Math.cos(a) * r;
+      positions[i * 3 + 1] = y;
+      positions[i * 3 + 2] = Math.sin(a) * r;
+    }
+    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    var mat = new THREE.PointsMaterial({ color: theme.secondary, size: 0.035, transparent: true, opacity: 0.22, blending: THREE.AdditiveBlending });
+    scene.add(new THREE.Points(geo, mat));
+    var offset = angles.slice();
+    return function (t, speed) {
+      var arr = geo.attributes.position.array;
+      for (var i = 0; i < count; i++) {
+        offset[i] += 0.002 * speed;
+        var a = angles[i] + offset[i];
+        arr[i * 3] = Math.cos(a) * radii[i];
+        arr[i * 3 + 2] = Math.sin(a) * radii[i];
+      }
+      geo.attributes.position.needsUpdate = true;
+    };
+  }
+
+  function buildCornerOrbits(THREE, scene, theme) {
+    var clusters = [
+      { cx: -1.7, cy: 1.1, color: theme.primary },
+      { cx: 1.7, cy: -1.1, color: theme.accent },
+    ];
+    var perCluster = 10;
+    var items = [];
+    clusters.forEach(function (cluster) {
+      var geo = new THREE.BufferGeometry();
+      var positions = new Float32Array(perCluster * 3);
+      var radii = [], angles = [];
+      for (var i = 0; i < perCluster; i++) {
+        var r = 0.3 + Math.random() * 0.5;
+        var a = Math.random() * Math.PI * 2;
+        radii.push(r); angles.push(a);
+        positions[i * 3] = cluster.cx + Math.cos(a) * r;
+        positions[i * 3 + 1] = cluster.cy + Math.sin(a) * r;
+        positions[i * 3 + 2] = 0;
+      }
+      geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      var mat = new THREE.PointsMaterial({ color: cluster.color, size: 0.045, transparent: true, opacity: 0.26, blending: THREE.AdditiveBlending });
+      scene.add(new THREE.Points(geo, mat));
+      items.push({ geo: geo, radii: radii, angles: angles, cx: cluster.cx, cy: cluster.cy, offset: angles.slice() });
+    });
+    return function (t, speed) {
+      items.forEach(function (c) {
+        var arr = c.geo.attributes.position.array;
+        for (var i = 0; i < perCluster; i++) {
+          c.offset[i] += 0.004 * speed;
+          var a = c.angles[i] + c.offset[i];
+          arr[i * 3] = c.cx + Math.cos(a) * c.radii[i];
+          arr[i * 3 + 1] = c.cy + Math.sin(a) * c.radii[i];
+        }
+        c.geo.attributes.position.needsUpdate = true;
+      });
+    };
+  }
+
+  function buildRisingMotes(THREE, scene, theme) {
+    var count = 22;
+    var geo = new THREE.BufferGeometry();
+    var positions = new Float32Array(count * 3);
+    var xs = [], speeds = [];
+    for (var i = 0; i < count; i++) {
+      var x = (Math.random() - 0.5) * 3.6;
+      xs.push(x);
+      speeds.push(0.15 + Math.random() * 0.2);
+      positions[i * 3] = x;
+      positions[i * 3 + 1] = Math.random() * 4 - 2;
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 1.5;
+    }
+    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    var mat = new THREE.PointsMaterial({ color: theme.accent, size: 0.04, transparent: true, opacity: 0.22, blending: THREE.AdditiveBlending });
+    scene.add(new THREE.Points(geo, mat));
+    var progress = xs.map(function () { return Math.random(); });
+    return function (t, speed) {
+      var arr = geo.attributes.position.array;
+      for (var i = 0; i < count; i++) {
+        progress[i] += 0.0025 * speeds[i] * speed;
+        if (progress[i] > 1) progress[i] -= 1;
+        arr[i * 3 + 1] = -2 + progress[i] * 4;
+        arr[i * 3] = xs[i] + Math.sin(progress[i] * Math.PI * 2) * 0.15;
+      }
+      geo.attributes.position.needsUpdate = true;
+    };
+  }
+
+  function buildHorizonLines(THREE, scene, theme) {
+    var colors = [theme.primary, theme.secondary, theme.accent];
+    var items = [];
+    var levels = [1.4, 0, -1.4];
+    levels.forEach(function (y, idx) {
+      var points = [];
+      var segments = 24;
+      for (var i = 0; i <= segments; i++) {
+        points.push(new THREE.Vector3(-2.6 + (i / segments) * 5.2, y, 0));
+      }
+      var geo = new THREE.BufferGeometry().setFromPoints(points);
+      var mat = new THREE.LineBasicMaterial({ color: colors[idx % colors.length], transparent: true, opacity: 0.15 });
+      scene.add(new THREE.Line(geo, mat));
+      items.push({ geo: geo, y: y, phase: idx * 1.3 });
+    });
+    return function (t, speed) {
+      items.forEach(function (item) {
+        var positions = item.geo.attributes.position;
+        for (var i = 0; i < positions.count; i++) {
+          var x = positions.getX(i);
+          positions.setY(i, item.y + Math.sin(x * 0.9 + t * 1.2 + item.phase) * 0.12);
+        }
+        positions.needsUpdate = true;
+      });
+    };
+  }
+
+  function buildSoftBokeh(THREE, scene, theme) {
+    var count = 9;
+    var geo = new THREE.BufferGeometry();
+    var positions = new Float32Array(count * 3);
+    var radii = [], angles = [];
+    for (var i = 0; i < count; i++) {
+      var r = 1 + Math.random() * 1.8;
+      var a = Math.random() * Math.PI * 2;
+      radii.push(r); angles.push(a);
+      positions[i * 3] = Math.cos(a) * r;
+      positions[i * 3 + 1] = (Math.random() - 0.5) * 2.6;
+      positions[i * 3 + 2] = Math.sin(a) * r - 1;
+    }
+    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    var mat = new THREE.PointsMaterial({ color: theme.primary, size: 0.55, transparent: true, opacity: 0.08, blending: THREE.AdditiveBlending, depthWrite: false });
+    scene.add(new THREE.Points(geo, mat));
+    var offset = angles.slice();
+    return function (t, speed) {
+      var arr = geo.attributes.position.array;
+      for (var i = 0; i < count; i++) {
+        offset[i] += 0.0015 * speed;
+        var a = angles[i] + offset[i];
+        arr[i * 3] = Math.cos(a) * radii[i];
+        arr[i * 3 + 2] = Math.sin(a) * radii[i] - 1;
+      }
+      geo.attributes.position.needsUpdate = true;
+    };
+  }
+
+  function buildConstellationCorners(THREE, scene, theme) {
+    var groups = [
+      { cx: -1.8, cy: 1.3 },
+      { cx: 1.8, cy: -1.3 },
+    ];
+    var perGroup = 5;
+    var items = [];
+    groups.forEach(function (g, gi) {
+      var pts = [];
+      for (var i = 0; i < perGroup; i++) {
+        pts.push(new THREE.Vector3(g.cx + (Math.random() - 0.5) * 0.9, g.cy + (Math.random() - 0.5) * 0.9, 0));
+      }
+      var dotGeo = new THREE.BufferGeometry().setFromPoints(pts);
+      var dotMat = new THREE.PointsMaterial({ color: theme.accent, size: 0.05, transparent: true, opacity: 0.28 });
+      scene.add(new THREE.Points(dotGeo, dotMat));
+
+      var linePts = [];
+      for (var j = 0; j < pts.length - 1; j++) linePts.push(pts[j], pts[j + 1]);
+      var lineGeo = new THREE.BufferGeometry().setFromPoints(linePts);
+      var lineMat = new THREE.LineBasicMaterial({ color: theme.secondary, transparent: true, opacity: 0.12 });
+      scene.add(new THREE.LineSegments(lineGeo, lineMat));
+
+      items.push({ dotGeo: dotGeo, basePts: pts, gi: gi });
+    });
+    return function (t, speed) {
+      items.forEach(function (item) {
+        var arr = item.dotGeo.attributes.position.array;
+        for (var i = 0; i < item.basePts.length; i++) {
+          arr[i * 3 + 1] = item.basePts[i].y + Math.sin(t * 0.8 + i + item.gi) * 0.05;
+        }
+        item.dotGeo.attributes.position.needsUpdate = true;
+      });
+    };
+  }
+
+  function buildVariant(THREE, scene, theme, index) {
+    var builders = [
+      buildAmbientDrift,
+      buildCornerOrbits,
+      buildRisingMotes,
+      buildHorizonLines,
+      buildSoftBokeh,
+      buildConstellationCorners,
+    ];
+    return (builders[index] || builders[0])(THREE, scene, theme);
+  }
+
+  function renderAnimatedBackground(canvas, theme, seed) {
+    loadThree(function () {
+      var THREE = window.THREE;
+      var renderer;
+      try {
+        renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+      } catch (e) {
+        return;
+      }
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+
+      var scene = new THREE.Scene();
+      var camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+      camera.position.set(0, 0, 6);
+
+      function resize() {
+        var w = canvas.clientWidth || canvas.parentNode.clientWidth;
+        var h = canvas.clientHeight || canvas.parentNode.clientHeight;
+        if (!w || !h) return;
+        renderer.setSize(w, h, false);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      var variantIndex = pickVariantIndex(seed, 6);
+      var update = buildVariant(THREE, scene, theme, variantIndex);
+
+      var isHovered = false;
+      var wrapper = canvas.parentNode;
+      wrapper.addEventListener('mouseenter', function () { isHovered = true; });
+      wrapper.addEventListener('mouseleave', function () { isHovered = false; });
+
+      var speed = 1;
+      var clock = 0;
+
+      function draw() {
+        var target = isHovered ? 1.8 : 1;
+        speed += (target - speed) * 0.05;
+        clock += 0.01 * speed;
+        update(clock, speed);
+        renderer.render(scene, camera);
+      }
+
+      if (prefersReducedMotion) {
+        draw();
+        return;
+      }
+      function loop() {
+        draw();
+        canvas._raf = requestAnimationFrame(loop);
+      }
+      canvas._raf = requestAnimationFrame(loop);
+    });
   }
 
   var container = el('div', {
@@ -254,8 +500,9 @@ function buildStandaloneScript(
     inset: '0',
     width: '100%',
     height: '100%',
-    opacity: '0.7',
+    opacity: '0.55',
     pointerEvents: 'none',
+    zIndex: '0',
   });
   container.appendChild(canvas);
 
@@ -318,6 +565,8 @@ function buildStandaloneScript(
     border: 'none',
     borderRadius: '10px',
     cursor: 'pointer',
+    position: 'relative',
+    zIndex: '1',
     transition: 'transform 0.15s ease, box-shadow 0.15s ease',
   });
   submitBtn.type = 'submit';
@@ -398,7 +647,7 @@ function buildStandaloneScript(
   container.appendChild(content);
 
   document.currentScript.parentNode.insertBefore(container, document.currentScript.nextSibling);
-  renderAnimatedBackground(canvas, theme);
+  renderAnimatedBackground(canvas, theme, variantSeed);
 })();
 `;
 }
@@ -445,11 +694,11 @@ export async function GET(
   };
 
   const themeSeedParam = new URL(request.url).searchParams.get("themeSeed");
-  const theme =
-    THEMES[hashToIndex(themeSeedParam || widget.id, THEMES.length)]!;
+  const seedString = themeSeedParam || widget.id;
+  const theme = THEMES[hashToIndex(seedString, THEMES.length)]!;
   const apiBase = new URL(request.url).origin;
 
-  const script = buildStandaloneScript(config, theme, apiBase);
+  const script = buildStandaloneScript(config, theme, apiBase, seedString);
 
   return new Response(script, {
     status: 200,
