@@ -5,7 +5,9 @@ interface RouteContext {
 const WIDGET_BUNDLE_SCRIPT = `
 (function () {
   var script = document.currentScript;
-  var widgetId = script && new URL(script.src, window.location.href).searchParams.get('id');
+  var scriptUrl = script && new URL(script.src, window.location.href);
+  var widgetId = scriptUrl && scriptUrl.searchParams.get('id');
+  var themeSeedParam = scriptUrl && scriptUrl.searchParams.get('themeSeed');
   if (!widgetId) {
     console.error('[widget] missing ?id= on script tag');
     return;
@@ -39,7 +41,7 @@ const WIDGET_BUNDLE_SCRIPT = `
     { primary: '#06b6d4', secondary: '#0ea5e9', accent: '#e0e7ff', bgFrom: '#04141c', bgTo: '#062534', text: '#ecfeff', muted: '#67e8f9' },
     { primary: '#eab308', secondary: '#f59e0b', accent: '#fb923c', bgFrom: '#1c1505', bgTo: '#332608', text: '#fffbeb', muted: '#fde68a' }
   ];
-  var theme = THEMES[hashToIndex(widgetId, THEMES.length)];
+  var theme = THEMES[hashToIndex(themeSeedParam || widgetId, THEMES.length)];
 
   function el(tag, styles, attrs) {
     var node = document.createElement(tag);

@@ -24,6 +24,8 @@ export function WidgetResultTabs({
 }: WidgetResultTabsProps) {
   const [tab, setTab] = useState<Tab>("preview");
 
+  const [themeSeed, setThemeSeed] = useState(0);
+
   return (
     <div>
       <div className="mb-3 inline-flex rounded-lg border border-[#5b2f99] bg-[#15072d]/70 p-1">
@@ -44,13 +46,22 @@ export function WidgetResultTabs({
       </div>
 
       {tab === "preview" && (
-        <WidgetPreview widgetId={widgetId} bundleVersion={bundleVersion} />
+        <WidgetPreview
+          widgetId={widgetId}
+          bundleVersion={bundleVersion}
+          themeSeed={themeSeed}
+          onThemeSeedChange={setThemeSeed}
+        />
       )}
       {tab === "embed" && (
         <EmbedSnippetBox widgetId={widgetId} bundleVersion={bundleVersion} />
       )}
       {tab === "source" && (
-        <WidgetSourceView widgetId={widgetId} bundleVersion={bundleVersion} />
+        <WidgetSourceView
+          widgetId={widgetId}
+          bundleVersion={bundleVersion}
+          themeSeed={themeSeed}
+        />
       )}
     </div>
   );
