@@ -44,21 +44,23 @@ export default async function WidgetSubmissionsPage({
   ]);
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-10">
+    <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
       <Link href={`/widgets/${widget.id}`}>
         <Button variant="ghost" className="mb-6">
           ← Back to widget
         </Button>
       </Link>
 
-      <div className="mb-8 flex items-center gap-4">
+      <div className="mb-6 flex items-center gap-3 sm:mb-8">
         <WidgetOrb />
         <div>
-          <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.2em] text-[#ad8cff]">
+          <p className="mb-0.5 font-mono text-[9px] uppercase tracking-[0.2em] text-[#ad8cff] sm:text-[10px]">
             Submissions
           </p>
-          <h1 className="text-2xl font-semibold text-white">{widget.title}</h1>
-          <p className="text-sm text-white/50">
+          <h1 className="text-xl font-semibold text-white sm:text-2xl">
+            {widget.title}
+          </h1>
+          <p className="text-xs text-white/50 sm:text-sm">
             {total} submission{total === 1 ? "" : "s"} captured
           </p>
         </div>
