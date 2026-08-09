@@ -9,8 +9,8 @@ import { Button } from "@/components/ui/button";
 const PAGE_SIZE = 20;
 
 interface WidgetSubmissionsPageProps {
-  params: { id: string };
-  searchParams: { page?: string };
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ page?: string }>;
 }
 
 export default async function WidgetSubmissionsPage({
@@ -21,14 +21,17 @@ export default async function WidgetSubmissionsPage({
   const userId = session?.user?.id;
   if (!userId) redirect("/login");
 
+  const { id } = await params;
+  const { page: pageParam } = await searchParams;
+
   const widget = await prisma.widget.findUnique({
-    where: { id: params.id },
+    where: { id },
     select: { id: true, title: true, tenantId: true },
   });
 
   if (!widget || widget.tenantId !== userId) notFound();
 
-  const page = Math.max(1, Number(searchParams.page ?? "1"));
+  const page = Math.max(1, Number(pageParam ?? "1"));
 
   const [submissions, total] = await Promise.all([
     prisma.submission.findMany({

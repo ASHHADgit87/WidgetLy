@@ -25,16 +25,14 @@ describe("POST /api/submissions (requires dev server running)", () => {
   });
 
   it("rejects an oversized payload with 413", async () => {
+    
+    const oversizedMessage = "a".repeat(15_000);
     const response = await fetch(`${BASE_URL}/api/submissions`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Origin: ALLOWED_ORIGIN,
-        "Content-Length": "999999",
-      },
+      headers: { "Content-Type": "application/json", Origin: ALLOWED_ORIGIN },
       body: JSON.stringify({
         widgetId: "seed-widget-1",
-        data: { email: "a@b.com" },
+        data: { email: "a@b.com", message: oversizedMessage },
       }),
     });
     expect(response.status).toBe(413);

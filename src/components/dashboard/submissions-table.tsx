@@ -37,7 +37,7 @@ export function SubmissionsTable({ submissions }: SubmissionsTableProps) {
               transition={{ duration: 0.3, delay: Math.min(i, 6) * 0.04 }}
               className="border-b border-[#5b2f99]/50 last:border-0 hover:bg-[#1f0a3d]/40"
             >
-              <td className="px-4 py-3 text-white/70">
+              <td className="whitespace-nowrap px-4 py-3 text-white/70">
                 {new Date(submission.createdAt).toLocaleString()}
               </td>
               <td className="px-4 py-3 text-white/70">
@@ -52,7 +52,7 @@ export function SubmissionsTable({ submissions }: SubmissionsTableProps) {
                   {submission.notifySent ? "Sent" : "Failed (non-blocking)"}
                 </Badge>
               </td>
-              <td className="max-w-xs truncate px-4 py-3 font-mono text-xs text-white/40">
+              <td className="max-w-md break-words px-4 py-3 font-mono text-xs text-white/40">
                 {JSON.stringify(submission.data)}
               </td>
             </motion.tr>

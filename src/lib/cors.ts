@@ -2,7 +2,6 @@ const allowedOrigins = (process.env.ALLOWED_WIDGET_ORIGINS ?? "")
   .split(",")
   .map((origin) => origin.trim())
   .filter(Boolean);
-
 export function resolveAllowedOrigin(
   requestOrigin: string | null,
 ): string | null {

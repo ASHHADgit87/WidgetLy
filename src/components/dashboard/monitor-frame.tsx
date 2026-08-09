@@ -8,8 +8,8 @@ export function MonitorFrame({ children }: MonitorFrameProps) {
   return (
     <div className="mx-auto w-full max-w-5xl">
       <div className="rounded-[28px] border border-[#3a3a44] bg-[#2a2a32] p-4 shadow-[0_30px_90px_rgba(0,0,0,0.5)] sm:p-6">
-        <div className="rounded-xl border border-[#4a4a56] bg-[#15072d] p-5 shadow-[inset_0_0_40px_rgba(0,0,0,0.4)] sm:p-8">
-          {children}
+        <div className="overflow-hidden rounded-xl border border-[#4a4a56] bg-[#15072d] p-5 shadow-[inset_0_0_40px_rgba(0,0,0,0.4)] sm:p-8">
+          <div className="overflow-x-auto">{children}</div>
         </div>
 
         <div className="mt-3 flex items-center justify-center gap-2">
