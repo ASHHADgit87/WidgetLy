@@ -39,7 +39,7 @@ export default async function WidgetDetailPage({ params }: PageProps) {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:items-start">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-start">
           <div className="lg:sticky lg:top-6">
             <WidgetResultTabs
               widgetId={widget.id}
