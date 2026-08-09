@@ -171,5 +171,5 @@ WidgetLy is delivered as a **Backend-as-a-Service (BaaS)** for lead capture. Dev
 
 - **Muhammad Ashhadullah Zaheer**
 
-- LinkedIn: https://www.linkedin.com/in/muhammad-ashhadulla
+- LinkedIn: https://www.linkedin.com/in/muhammad-ashhadullah-zaheer-41194a340/
 
