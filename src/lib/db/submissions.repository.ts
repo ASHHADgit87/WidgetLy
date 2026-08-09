@@ -1,4 +1,5 @@
 import { prisma } from "./prisma";
+import { Prisma } from "@prisma/client";
 import type { Submission } from "@prisma/client";
 import type { GeoResult } from "@/types";
 import type { NotifyResult } from "@/lib/notifications/notify";
@@ -18,7 +19,7 @@ export async function createSubmission(
     data: {
       widgetId: params.widgetId,
       tenantId: params.tenantId,
-      data: params.data,
+      data: params.data as Prisma.InputJsonValue,
       ipAddress: params.ipAddress,
       country: params.geo.country,
       region: params.geo.region,
