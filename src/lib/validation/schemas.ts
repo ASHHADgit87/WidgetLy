@@ -21,7 +21,18 @@ export const widgetDisplayOptionsSchema = z.object({
 });
 
 export const createWidgetSchema = z.object({
-  type: z.enum(["SIGNUP_FORM", "CONTACT_FORM", "CTA_POPOVER"]),
+  type: z.enum([
+    "SIGNUP_FORM",
+    "CONTACT_FORM",
+    "CTA_POPOVER",
+    "NEWSLETTER_BAR",
+    "EXIT_INTENT",
+    "WAITLIST",
+    "FEEDBACK_NPS",
+    "CHAT_BUBBLE",
+    "DISCOUNT_REVEAL",
+    "EVENT_RSVP",
+  ]),
   title: z.string().min(1).max(120),
   description: z.string().max(500).optional(),
   buttonText: z.string().min(1).max(40).default("Submit"),

@@ -114,6 +114,13 @@ export function WidgetForm({ initialWidget }: WidgetFormProps) {
           <option value="SIGNUP_FORM">Signup form</option>
           <option value="CONTACT_FORM">Contact form</option>
           <option value="CTA_POPOVER">CTA popover</option>
+          <option value="NEWSLETTER_BAR">Newsletter bar</option>
+          <option value="EXIT_INTENT">Exit-intent popup</option>
+          <option value="WAITLIST">Waitlist</option>
+          <option value="FEEDBACK_NPS">Feedback / NPS</option>
+          <option value="CHAT_BUBBLE">Chat bubble</option>
+          <option value="DISCOUNT_REVEAL">Discount reveal</option>
+          <option value="EVENT_RSVP">Event RSVP</option>
         </select>
       </div>
 

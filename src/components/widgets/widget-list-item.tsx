@@ -12,6 +12,13 @@ const typeLabels: Record<Widget["type"], string> = {
   SIGNUP_FORM: "Signup form",
   CONTACT_FORM: "Contact form",
   CTA_POPOVER: "CTA popover",
+  NEWSLETTER_BAR: "Newsletter bar",
+  EXIT_INTENT: "Exit-intent popup",
+  WAITLIST: "Waitlist",
+  FEEDBACK_NPS: "Feedback / NPS",
+  CHAT_BUBBLE: "Chat bubble",
+  DISCOUNT_REVEAL: "Discount reveal",
+  EVENT_RSVP: "Event RSVP",
 };
 
 export function WidgetListItem({ widget }: WidgetListItemProps) {
