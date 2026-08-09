@@ -271,13 +271,11 @@ export function WidgetForm({ initialWidget }: WidgetFormProps) {
       )}
 
       <div>
-        <label className="mb-1 block text-xs text-white/60 sm:text-sm">
-          Widget type
-        </label>
+        <label className="mb-1 block text-sm text-white/60">Widget type</label>
         <select
           value={type}
           onChange={(e) => handleTypeChange(e.target.value as Widget["type"])}
-          className="w-full rounded-md border border-[#4b2b82] bg-[#1a0525] px-2.5 py-2 text-xs text-white outline-none focus:border-[#9e78ff] sm:text-sm"
+          className="w-full rounded-md border border-[#4b2b82] bg-[#1a0525] px-3 py-2 text-sm text-white outline-none focus:border-[#9e78ff]"
         >
           {typeOptions.map((opt) => (
             <option key={opt.value} value={opt.value}>
@@ -292,9 +290,7 @@ export function WidgetForm({ initialWidget }: WidgetFormProps) {
       </div>
 
       <div>
-        <label className="mb-1 block text-xs text-white/60 sm:text-sm">
-          Title
-        </label>
+        <label className="mb-1 block text-sm text-white/60">Title</label>
         <Input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
@@ -304,9 +300,7 @@ export function WidgetForm({ initialWidget }: WidgetFormProps) {
       </div>
 
       <div>
-        <label className="mb-1 block text-xs text-white/60 sm:text-sm">
-          Description
-        </label>
+        <label className="mb-1 block text-sm text-white/60">Description</label>
         <Input
           value={description}
           onChange={(e) => setDescription(e.target.value)}
@@ -315,9 +309,7 @@ export function WidgetForm({ initialWidget }: WidgetFormProps) {
       </div>
 
       <div>
-        <label className="mb-1 block text-xs text-white/60 sm:text-sm">
-          Button text
-        </label>
+        <label className="mb-1 block text-sm text-white/60">Button text</label>
         <Input
           value={buttonText}
           onChange={(e) => setButtonText(e.target.value)}

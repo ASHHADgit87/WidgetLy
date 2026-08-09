@@ -232,7 +232,7 @@ export function HowItWorks() {
           ))}
         </svg>
 
-        <div className="relative z-10 grid grid-cols-1 gap-x-8 gap-y-10 px-4 sm:grid-cols-2 sm:gap-x-10 sm:gap-y-14 lg:grid-flow-col lg:grid-cols-3 lg:grid-rows-2 lg:px-6">
+        <div className="relative z-10 grid grid-cols-1 gap-x-20 gap-y-20 sm:grid-cols-2 lg:grid-flow-col lg:grid-cols-3 lg:grid-rows-2">
           {steps.map((step, index) => (
             <motion.div
               key={step.number}
@@ -245,7 +245,7 @@ export function HowItWorks() {
               onAnimationComplete={measure}
               whileHover={{ y: -6, scale: 1.015 }}
               transition={{ duration: 0.5, delay: (index % 3) * 0.1 }}
-              className="relative rounded-xl border border-[#5b2f99] bg-[#15072d]/80 p-4 shadow-[0_14px_60px_rgba(111,46,221,0.16)] transition-shadow hover:shadow-[0_20px_80px_rgba(139,107,255,0.28)] sm:p-6"
+              className="relative rounded-xl border border-[#5b2f99] bg-[#15072d]/80 p-6 shadow-[0_14px_60px_rgba(111,46,221,0.16)] transition-shadow hover:shadow-[0_20px_80px_rgba(139,107,255,0.28)]"
             >
               <span className="absolute right-5 top-5 font-mono text-3xl font-semibold text-white/10">
                 {step.number}

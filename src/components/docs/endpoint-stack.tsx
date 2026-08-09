@@ -101,14 +101,14 @@ function EndpointCard({
   const scale = useTransform(progress, range, [1, targetScale]);
 
   return (
-    <div className="sticky top-0 flex h-[40vh] items-start justify-center px-4 pt-[8vh] sm:h-screen sm:px-6 sm:pt-[15vh]">
+    <div className="sticky top-0 flex h-screen items-start justify-center px-6 pt-[15vh]">
       <motion.div
         ref={cardRef}
         style={{
           scale,
           top: `calc(-6vh + ${index * 22}px)`,
         }}
-        className="relative flex w-full max-w-5xl origin-top flex-col items-center gap-2 rounded-2xl border border-[#542184] bg-[#13051f]/80 p-5 text-center shadow-[0_20px_70px_rgba(112,70,238,0.12)] backdrop-blur-md min-h-[160px] sm:p-6 sm:min-h-[180px]"
+        className="relative flex w-full max-w-5xl origin-top flex-col items-center gap-2 rounded-2xl border border-[#542184] bg-[#13051f]/80 p-6 text-center shadow-[0_20px_70px_rgba(112,70,238,0.12)] backdrop-blur-md min-h-[180px]"
       >
         <span className="font-mono text-xs text-white/30">
           {String(index + 1).padStart(2, "0")} /{" "}

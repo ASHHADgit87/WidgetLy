@@ -131,14 +131,14 @@ function StackCard({
   const colors = accentClasses[accent];
 
   return (
-    <div className="sticky top-0 flex h-[50vh] items-start justify-center px-4 pt-[10vh] sm:h-screen sm:px-6 sm:pt-[15vh]">
+    <div className="sticky top-0 flex h-screen items-start justify-center px-6 pt-[15vh]">
       <motion.div
         ref={cardRef}
         style={{
           scale,
           top: `calc(-6vh + ${index * 22}px)`,
         }}
-        className="relative flex w-full max-w-6xl origin-top flex-col gap-4 rounded-2xl border border-[#542184] bg-[#13051f]/80 p-5 shadow-[0_20px_70px_rgba(112,70,238,0.12)] backdrop-blur-md sm:flex-row sm:items-start sm:p-8 lg:p-10 min-h-[200px] sm:min-h-[235px]"
+        className="relative flex w-full max-w-6xl origin-top flex-col gap-6 rounded-2xl border border-[#542184] bg-[#13051f]/80 p-8 shadow-[0_20px_70px_rgba(112,70,238,0.12)] backdrop-blur-md sm:flex-row sm:items-start sm:p-10 min-h-[235px]"
       >
         <div
           className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-xl ring-1 ${colors.bg} ${colors.ring}`}
@@ -153,10 +153,8 @@ function StackCard({
               {String(total).padStart(2, "0")}
             </span>
           </div>
-          <h3 className="text-lg font-semibold text-white sm:text-xl">
-            {title}
-          </h3>
-          <p className="mt-1.5 text-xs leading-relaxed text-white/60 sm:text-sm">
+          <h3 className="text-xl font-semibold text-white">{title}</h3>
+          <p className="mt-2 text-sm leading-relaxed text-white/60">
             {description}
           </p>
         </div>

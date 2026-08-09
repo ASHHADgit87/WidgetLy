@@ -22,14 +22,14 @@ export function AuthFormCard({
   ...props
 }: AuthFormCardProps) {
   return (
-    <div className={cn(authCardClassName, "p-5 sm:p-6", className)} {...props}>
-      <div className="mb-4 sm:mb-6">
-        <p className="mb-1.5 font-mono text-[9px] uppercase tracking-[0.2em] text-[#ad8cff] sm:text-[10px]">
+    <div className={cn(authCardClassName, "p-8", className)} {...props}>
+      <div className="mb-6">
+        <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.2em] text-[#ad8cff]">
           {badge}
         </p>
-        <h1 className="text-lg font-semibold text-white sm:text-xl">{title}</h1>
+        <h1 className="text-xl font-semibold text-white">{title}</h1>
         {description && (
-          <p className="mt-1 text-xs text-white/50 sm:text-sm">{description}</p>
+          <p className="mt-1 text-sm text-white/50">{description}</p>
         )}
       </div>
       {children}
@@ -75,8 +75,6 @@ export function AuthFormField({
 
 export function AuthFormFooter({ children }: { children: ReactNode }) {
   return (
-    <p className="mt-4 text-center text-xs text-white/50 sm:mt-6 sm:text-sm">
-      {children}
-    </p>
+    <p className="mt-6 text-center text-sm text-white/50">{children}</p>
   );
 }

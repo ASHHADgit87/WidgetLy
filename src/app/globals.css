@@ -19,7 +19,6 @@ body {
 body {
   background-color: #12031c;
   color: theme("colors.white");
-  overflow-x: hidden;
 }
 
 ::selection {
@@ -30,7 +29,6 @@ body {
 html {
   scrollbar-width: none;
   -ms-overflow-style: none;
-  -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -40,33 +38,4 @@ body {
 ::-webkit-scrollbar {
   width: 0;
   height: 0;
-}
-
-img,
-svg,
-canvas,
-video {
-  max-width: 100%;
-  height: auto;
-}
-
-table {
-  display: block;
-  overflow-x: auto;
-  white-space: nowrap;
-}
-
-@media (max-width: 640px) {
-  h1 {
-    font-size: 1.75rem;
-    line-height: 1.2;
-  }
-  h2 {
-    font-size: 1.5rem;
-    line-height: 1.25;
-  }
-  h3 {
-    font-size: 1.125rem;
-    line-height: 1.3;
-  }
 }

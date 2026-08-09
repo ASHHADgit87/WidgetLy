@@ -26,7 +26,7 @@ export function WidgetListItem({ widget }: WidgetListItemProps) {
     <Link href={`/widgets/${widget.id}`}>
       <Card className="border-[#5b2f99] bg-[#15072d]/70 transition hover:border-[#8d5cff]/60 hover:shadow-[0_16px_50px_rgba(139,92,255,0.15)]">
         <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-3">
             <WidgetOrb />
             <div>
               <p className="text-sm font-medium text-white">{widget.title}</p>

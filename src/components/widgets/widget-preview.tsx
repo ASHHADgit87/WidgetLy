@@ -87,11 +87,11 @@ export function WidgetPreview({
       <div className="relative overflow-hidden rounded-lg border border-[#5b2f99] bg-[#0d0116]">
         <WidgetPreviewGlow />
 
-        <div className="relative z-10 flex items-center gap-1.5 border-b border-[#5b2f99] bg-[#15072d]/90 px-2.5 py-2 backdrop-blur-sm sm:px-3">
+        <div className="relative z-10 flex items-center gap-1.5 border-b border-[#5b2f99] bg-[#15072d]/90 px-3 py-2 backdrop-blur-sm">
           <span className="h-2 w-2 rounded-full bg-[#ff6b6b]/60" />
           <span className="h-2 w-2 rounded-full bg-[#f4d35b]/60" />
           <span className="h-2 w-2 rounded-full bg-green/60" />
-          <span className="ml-2 font-mono text-[9px] text-white/30 sm:text-[10px]">
+          <span className="ml-2 font-mono text-[10px] text-white/30">
             Live preview — real embed bundle
           </span>
         </div>
@@ -111,7 +111,7 @@ export function WidgetPreview({
         variant="ghost"
         size="sm"
         onClick={() => onThemeSeedChange(Math.random())}
-        className="mt-2.5 gap-1.5 sm:mt-3"
+        className="mt-3 gap-1.5"
       >
         <Sparkles size={14} />
         New theme

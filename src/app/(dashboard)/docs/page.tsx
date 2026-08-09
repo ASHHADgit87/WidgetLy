@@ -62,7 +62,7 @@ export default async function DocsPage() {
           {statusCodes.map((item) => (
             <div
               key={item.code}
-              className="rounded-lg border border-[#5b2f99] bg-[#15072d]/70 p-3 sm:p-4"
+              className="rounded-lg border border-[#5b2f99] bg-[#15072d]/70 p-4"
             >
               <span className="font-mono text-sm text-[#c9b3ff]">
                 {item.code}

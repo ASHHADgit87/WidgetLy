@@ -289,28 +289,27 @@ export default function HomePage() {
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-[#12031c] via-[#2d0a4a] to-[#18071f] text-white">
-      <section className="relative mx-auto grid max-w-6xl grid-cols-1 items-center gap-6 px-4 pb-10 pt-16 sm:px-6 sm:pb-12 sm:pt-20 lg:grid-cols-2 lg:py-32">
+      <section className="relative mx-auto grid max-w-6xl grid-cols-1 items-center gap-8 px-6 pb-12 pt-20 lg:grid-cols-2 lg:py-32">
         <div className="lg:-ml-[90px]">
-          <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.2em] text-green sm:text-xs">
+          <p className="mb-4 font-mono text-xs uppercase tracking-[0.2em] text-green">
             Embeddable widgets, hardened for the open internet
           </p>
-          <h1 className="mb-5 text-3xl font-semibold leading-tight text-white sm:text-4xl lg:text-5xl">
+          <h1 className="mb-6 text-4xl font-semibold leading-tight text-white sm:text-5xl">
             One script tag.
-            <br className="hidden sm:block" />A backend that survives{" "}
-            <br className="hidden sm:block" /> the internet.
+            <br />A backend that survives <br></br> the internet.
           </h1>
-          <p className="mb-5 max-w-lg text-sm text-white/60 sm:text-base">
+          <p className="mb-6 max-w-lg text-white/60">
             Create a widget, hand out a single embed snippet, and safely accept
             submissions from any website you don&apos;t control. Every request
             is validated, rate-limited, spam-filtered, and geo-enriched before
             it ever reaches your dashboard.
           </p>
 
-          <div className="mb-6 flex flex-wrap items-center gap-2">
+          <div className="mb-8 flex flex-wrap items-center gap-2">
             {heroBadges.map((badge) => (
               <span
                 key={badge.label}
-                className={`rounded-full border border-white/10 bg-white/5 px-2.5 py-1 font-mono text-[10px] tracking-wide sm:text-xs ${badge.color}`}
+                className={`rounded-full border border-white/10 bg-white/5 px-3 py-1 font-mono text-[11px] tracking-wide ${badge.color}`}
               >
                 {badge.label}
               </span>
@@ -318,19 +317,19 @@ export default function HomePage() {
           </div>
 
           {!isAuthenticated && (
-            <div className="mb-4 flex flex-wrap items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3">
               <Link href={ctaHref}>
                 <Button size="lg">{ctaLabel}</Button>
               </Link>
             </div>
           )}
 
-          <p className="text-[11px] text-white/35 sm:text-xs">
+          <p className="mt-5 text-xs text-white/35">
             No credit card, ever. Runs entirely on your machine.
           </p>
         </div>
 
-        <div className="relative h-[320px] w-full sm:h-[400px] lg:ml-[90px] lg:h-[520px]">
+        <div className="relative h-[420px] lg:ml-[90px] w-full lg:h-[520px]">
           <div className="pointer-events-none absolute inset-0 hidden sm:block">
             {floatingPills.map((pill) => (
               <div
@@ -349,7 +348,7 @@ export default function HomePage() {
                   style={{ animationDuration: `${pill.duration}s` }}
                 >
                   <span
-                    className={`whitespace-nowrap rounded-full border bg-[#12031c]/70 px-2.5 py-1 font-mono text-[9px] tracking-wide backdrop-blur-sm sm:text-[10px] ${pill.color}`}
+                    className={`whitespace-nowrap rounded-full border bg-[#12031c]/70 px-3 py-1 font-mono text-[10px] tracking-wide backdrop-blur-sm ${pill.color}`}
                   >
                     {pill.text}
                   </span>

@@ -102,7 +102,7 @@ export function Navbar() {
             width={210}
             height={45}
             priority
-            className="h-10 w-auto transition-transform duration-300 hover:scale-105 md:h-12"
+            className="transition-transform duration-300 hover:scale-105"
           />
         </Link>
 

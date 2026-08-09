@@ -16,7 +16,7 @@ export function AuthPageShell({
   return (
     <section
       className={cn(
-        "relative flex min-h-[calc(100vh-73px)] items-center justify-center px-4 py-10 sm:px-6 sm:py-12",
+        "relative flex min-h-[calc(100vh-73px)] items-center justify-center px-4 py-12",
         className,
       )}
     >
