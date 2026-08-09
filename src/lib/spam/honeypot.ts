@@ -13,6 +13,7 @@ export function stripHoneypotField(
   data: Record<string, unknown>,
   honeypotFieldName: string,
 ): Record<string, unknown> {
-  const { [honeypotFieldName]: _removed, ...rest } = data;
-  return rest;
+  const result = { ...data } as Record<string, unknown>;
+  delete result[honeypotFieldName];
+  return result;
 }

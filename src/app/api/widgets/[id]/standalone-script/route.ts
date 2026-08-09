@@ -681,6 +681,7 @@ export async function GET(
   };
 
   const themeSeedParam = new URL(request.url).searchParams.get("themeSeed");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const seedString = (widget as any).themeSeed || themeSeedParam || widget.id;
   const theme = THEMES[hashToIndex(seedString, THEMES.length)]!;
   const apiBase = new URL(request.url).origin;
