@@ -11,7 +11,6 @@ import { cn } from "@/lib/utils";
 
 interface CtaSectionProps {
   isAuthenticated: boolean;
-  userExists: boolean | null;
 }
 
 const CTA_PARTICLE_COUNT = 40;
@@ -121,7 +120,7 @@ function CtaOrb() {
   );
 }
 
-export function CtaSection({ isAuthenticated, userExists }: CtaSectionProps) {
+export function CtaSection({ isAuthenticated }: CtaSectionProps) {
   return (
     <section className="mx-auto max-w-4xl px-6 py-24">
       <motion.div
@@ -179,17 +178,30 @@ export function CtaSection({ isAuthenticated, userExists }: CtaSectionProps) {
               </Button>
             </Link>
           ) : (
-            <Link href={userExists === false ? "/register" : "/login"}>
-              <Button
-                size="lg"
-                className="border border-[#8f5cf0]/50 bg-gradient-to-r from-[#8f5cf0] to-[#6f33b8] text-white hover:opacity-90"
-              >
-                {userExists === false ? "Get started free" : "Sign in"}
-              </Button>
-            </Link>
+            <div className="flex items-center justify-center gap-3">
+              <Link href="/register">
+                <Button
+                  size="lg"
+                  className="border border-[#8f5cf0]/50 bg-gradient-to-r from-[#8f5cf0] to-[#6f33b8] text-white hover:opacity-90"
+                >
+                  Get started free
+                </Button>
+              </Link>
+              <Link href="/login">
+                <Button
+                  variant="ghost"
+                  size="lg"
+                  className="border border-[#8f5cf0]/50 text-white hover:opacity-90"
+                >
+                  Sign in
+                </Button>
+              </Link>
+            </div>
           )}
         </div>
       </motion.div>
     </section>
   );
 }
+
+

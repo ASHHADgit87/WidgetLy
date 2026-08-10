@@ -20,31 +20,12 @@ export function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [userExists, setUserExists] = useState<boolean | null>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener("scroll", onScroll);
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      try {
-        const res = await fetch("/api/auth/user-exists");
-        const json = await res.json();
-        if (mounted && json?.success) {
-          setUserExists(Boolean(json.data?.user_exists));
-        }
-      } catch {
-        if (mounted) setUserExists(false);
-      }
-    })();
-    return () => {
-      mounted = false;
-    };
   }, []);
 
   useEffect(() => {
@@ -83,9 +64,6 @@ export function Navbar() {
 
   if (status === "loading") return null;
 
-  const ctaLabel = userExists === false ? "Get Started" : "Sign In";
-  const ctaHref = userExists === false ? "/register" : "/login";
-
   return (
     <>
       <nav
@@ -121,14 +99,18 @@ export function Navbar() {
 
         <div className="flex items-center gap-4">
           {!isAuthenticated ? (
-            <button
-              onClick={() => {
-                window.location.href = ctaHref;
-              }}
-              className="px-6 py-2 rounded-xl font-bold text-white bg-gradient-to-r from-[#8d5cff] via-[#b184ff] to-[#dbaefd] border-2 border-white/20 hover:scale-105 transition-all shadow-lg text-sm whitespace-nowrap"
-            >
-              {ctaLabel}
-            </button>
+            <div className="flex items-center gap-3">
+              <Link href="/register">
+                <button className="px-4 py-2 rounded-xl font-bold text-white bg-gradient-to-r from-[#8d5cff] via-[#b184ff] to-[#dbaefd] border-2 border-white/20 hover:scale-105 transition-all shadow-lg text-sm whitespace-nowrap">
+                  Get Started
+                </button>
+              </Link>
+              <Link href="/login">
+                <button className="px-4 py-2 rounded-xl font-bold text-white border-2 border-white/20 hover:scale-105 transition-all text-sm whitespace-nowrap">
+                  Sign in
+                </button>
+              </Link>
+            </div>
           ) : (
             <div className="relative">
               <div
@@ -212,20 +194,30 @@ export function Navbar() {
                 Profile
               </Link>
             )}
-            <button
-              onClick={() => {
-                if (isAuthenticated) {
+            {!isAuthenticated ? (
+              <div className="flex flex-col gap-3">
+                <Link href="/register" onClick={() => setMenuOpen(false)}>
+                  <button className="w-full py-2 rounded-xl font-bold text-white bg-gradient-to-r from-[#8d5cff] via-[#b184ff] to-[#dbaefd] hover:scale-105 transition-all whitespace-nowrap">
+                    Get Started
+                  </button>
+                </Link>
+                <Link href="/login" onClick={() => setMenuOpen(false)}>
+                  <button className="w-full py-2 rounded-xl font-bold text-white border-2 border-white/20 hover:scale-105 transition-all whitespace-nowrap">
+                    Sign in
+                  </button>
+                </Link>
+              </div>
+            ) : (
+              <button
+                onClick={() => {
                   setMenuOpen(false);
                   signOut({ callbackUrl: "/" });
-                } else {
-                  setMenuOpen(false);
-                  window.location.href = ctaHref;
-                }
-              }}
-              className="py-2 rounded-xl font-bold text-white bg-gradient-to-r from-[#8d5cff] via-[#b184ff] to-[#dbaefd] hover:scale-105 transition-all whitespace-nowrap"
-            >
-              {isAuthenticated ? "Logout" : ctaLabel}
-            </button>
+                }}
+                className="py-2 rounded-xl font-bold text-white bg-gradient-to-r from-[#8d5cff] via-[#b184ff] to-[#dbaefd] hover:scale-105 transition-all whitespace-nowrap"
+              >
+                Logout
+              </button>
+            )}
           </div>
         </div>
       )}

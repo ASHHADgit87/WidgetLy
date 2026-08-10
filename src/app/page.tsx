@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { Canvas, useFrame } from "@react-three/fiber";
@@ -263,29 +263,8 @@ const floatingPills = [
 
 export default function HomePage() {
   const { data: session, status } = useSession();
-  const [userExists, setUserExists] = useState<boolean | null>(null);
   const isAuthenticated = status === "authenticated";
   const showAuthButtons = status === "unauthenticated";
-
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      try {
-        const res = await fetch("/api/auth/user-exists");
-        const json = await res.json();
-        if (mounted && json?.success) {
-          setUserExists(Boolean(json.data?.user_exists));
-        }
-      } catch {
-        if (mounted) setUserExists(null);
-      }
-    })();
-    return () => {
-      mounted = false;
-    };
-  }, []);
-  const ctaLabel = userExists === false ? "Get started" : "Sign in";
-  const ctaHref = userExists === false ? "/register" : "/login";
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-[#12031c] via-[#2d0a4a] to-[#18071f] text-white">
@@ -318,8 +297,11 @@ export default function HomePage() {
 
           {!isAuthenticated && (
             <div className="flex flex-wrap items-center gap-3">
-              <Link href={ctaHref}>
-                <Button size="lg">{ctaLabel}</Button>
+              <Link href="/register">
+                <Button size="lg">Get Started</Button>
+              </Link>
+              <Link href="/login">
+                <Button variant="ghost" size="lg">Sign in</Button>
               </Link>
             </div>
           )}
@@ -371,7 +353,7 @@ export default function HomePage() {
 
       <HowItWorks />
       <FeaturesSection />
-      <CtaSection isAuthenticated={isAuthenticated} userExists={userExists} />
+      <CtaSection isAuthenticated={isAuthenticated} />
       <Footer />
 
       <style jsx>{`
